@@ -1,15 +1,14 @@
 const express = require('express');
-// require('dotenv').config();
 const dontenv = require("dotenv");
 const cors = require("cors");
-const app = express();
-const port = process.env.PORT ;
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 dontenv.config();
 
+const app = express();
+const port = process.env.PORT ;
 const uri = process.env.DB_URI;
-
 
 app.use(
   cors({
@@ -27,13 +26,26 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   }
-});
+});'/;.l,'
 
 async function server() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
+   
     await client.connect();
-    // Send a ping to confirm a successful connection
+    const db = client.db("Prompt-Craft");
+    //const subcriptionCollection = db.collection("subcription");
+    const userCollection = db.collection("user");
+    const promptCollection = db.collection("prompts");
+    
+
+    app.post('/api/prompts', async (req, res) => {
+      const newPrompt = req.body;
+      const result = await promptCollection.insertOne(newPrompt);
+      res.send(result);
+    });
+     
+
+  
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
