@@ -44,6 +44,14 @@ async function server() {
       res.send(result);
     });
      
+    app.get('/api/prompts', async (req, res) => {
+        try {
+          const prompts = await promptCollection.find({}).toArray();
+          res.json({ data: prompts });
+        } catch (err) {
+          res.status(500).json({ message: "Failed to fetch prompts", error: err });
+        }
+    });
 
   
     await client.db("admin").command({ ping: 1 });
