@@ -44,14 +44,38 @@ async function server() {
       res.send(result);
     });
      
+    // app.get('/api/prompts', async (req, res) => {
+    //     try {
+    //       const prompts = await promptCollection.find({}).toArray();
+    //       res.json({ data: prompts });
+    //     } catch (err) {
+    //       res.status(500).json({ message: "Failed to fetch prompts", error: err });
+    //     }
+    // });
+
+
     app.get('/api/prompts', async (req, res) => {
-        try {
-          const prompts = await promptCollection.find({}).toArray();
-          res.json({ data: prompts });
-        } catch (err) {
-          res.status(500).json({ message: "Failed to fetch prompts", error: err });
-        }
-    });
+         try {
+             const { category, engine, difficulty, sort, search } = req.query;
+             let query = {};
+     
+             if (category && category !== "All") query.category = category;
+             if (engine && engine !== "All") query.aiEngine = engine;
+             if (difficulty && difficulty !== "All") query.level = difficulty;
+             if (search) query.title = { $regex: search, $options: 'i' };
+     
+             let sortOption = {};
+             if (sort === "Latest") sortOption = { date: -1 };
+             else if (sort === "Most Popular") sortOption = { views: -1 };
+             else if (sort === "Most Copied") sortOption = { copies: -1 };
+     
+             const prompts = await promptCollection.find(query).sort(sortOption).toArray();
+             
+             res.json({ data: prompts });
+         } catch (err) {
+             res.status(500).json({ message: "Failed to fetch prompts", error: err });
+         }
+     });
 
   
     await client.db("admin").command({ ping: 1 });
