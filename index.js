@@ -19,7 +19,6 @@ app.use(
 app.use(express.json());
 
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -45,8 +44,6 @@ async function server() {
     });
      
     
-
-
     app.get('/api/prompts', async (req, res) => {
     try {
        
