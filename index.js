@@ -33,9 +33,9 @@ async function server() {
    
     await client.connect();
     const db = client.db("Prompt-Craft");
-    //const subcriptionCollection = db.collection("subcription");
+  
     const userCollection = db.collection("user");
-    const promptCollection = db.collection("prompts");
+    const promptCollection = db.collection("Prompts");
     
 
     app.post('/api/prompts', async (req, res) => {
