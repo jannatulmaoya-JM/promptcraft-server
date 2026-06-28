@@ -32,10 +32,9 @@ async function server() {
    
     await client.connect();
     const db = client.db("Prompt-Craft");
-  
     const userCollection = db.collection("user");
     const promptCollection = db.collection("Prompts");
-    
+    const reviewCollection = db.collection("reviews"); 
 
     app.post('/api/prompts', async (req, res) => {
       const newPrompt = req.body;
@@ -111,6 +110,26 @@ app.get('/api/prompts/popular', async (req, res) => {
                  res.status(500).json({ message: "Error fetching prompt" });
              }
     });
+
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const reviews = await reviewCollection.find({}).toArray();
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch reviews", error: err });
+  }
+});
+
+app.get('/api/reviews/populer', async (req, res) => {
+  try {
+
+  
+    const reviews = await reviewCollection.find({}).limit(4).toArray(); 
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch reviews", error: err });
+  }
+});
 
   
     await client.db("admin").command({ ping: 1 });
