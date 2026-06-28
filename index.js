@@ -1,7 +1,7 @@
 const express = require('express');
 const dontenv = require("dotenv");
 const cors = require("cors");
-
+const { createRemoteJWKSet, jwtVerify } = require('jose');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 dontenv.config();
@@ -27,6 +27,27 @@ const client = new MongoClient(uri, {
   }
 });
 
+const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`));
+const varifyToken = async(req,res,next) =>{
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ msg: "Unauthorized" });
+  }
+
+  const token = authHeader.split(" ") [1]
+  if (!token){
+     return res. status (401).json ({ msg: "Unauthorized"});
+  }
+
+  try {
+    const {payload} = await jwtVerify(token, JWKS)
+     req.user = payload
+     next();
+  } catch (error){
+      console.log(error)
+       return res. status (401).json ({ msg: "Unauthorized"});
+  }
+}
 async function server() {
   try {
    
@@ -36,7 +57,7 @@ async function server() {
     const promptCollection = db.collection("Prompts");
     const reviewCollection = db.collection("reviews"); 
 
-    app.post('/api/prompts', async (req, res) => {
+    app.post('/api/prompts', varifyToken, async (req, res) => {
       const newPrompt = req.body;
       const result = await promptCollection.insertOne(newPrompt);
       res.send(result);
