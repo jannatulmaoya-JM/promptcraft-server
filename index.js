@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
     strict: true,
     deprecationErrors: true,
   }
-});'/;.l,'
+});
 
 async function server() {
   try {
@@ -76,10 +76,41 @@ async function server() {
             totalPages: Math.ceil(totalPrompts / 10),
             currentPage: parseInt(page)
         });
+         } catch (err) {
+           res.status(500).json({ message: "Failed to fetch prompts", error: err });
+          }
+    });
+  
+
+
+app.get('/api/prompts/popular', async (req, res) => {
+    try {
+     
+        const popularPrompts = await promptCollection
+            .find({})
+            .sort({ views: -1 })
+            .limit(6)           
+            .toArray();
+            
+        res.json({ data: popularPrompts });
     } catch (err) {
-        res.status(500).json({ message: "Failed to fetch prompts", error: err });
+        res.status(500).json({ message: "Failed to fetch popular prompts", error: err });
     }
 });
+
+    
+
+    const { ObjectId } = require('mongodb');
+         
+         app.get('/api/prompts/:id', async (req, res) => {
+             try {
+                 const id = req.params.id;
+                 const prompt = await promptCollection.findOne({ _id: new ObjectId(id) });
+                 res.json(prompt);
+             } catch (err) {
+                 res.status(500).json({ message: "Error fetching prompt" });
+             }
+    });
 
   
     await client.db("admin").command({ ping: 1 });
