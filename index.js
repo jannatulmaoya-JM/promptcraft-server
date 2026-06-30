@@ -3,6 +3,7 @@
 const express = require('express');
 const dontenv = require("dotenv");
 const cors = require("cors");
+
 const { createRemoteJWKSet,jwtVerify } = require('jose');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
@@ -12,12 +13,17 @@ const app = express();
 const port = process.env.PORT ;
 const uri = process.env.DB_URI;
 
-app.use(
-  cors({
-    credentials: true,
-    origin: [process.env.CLIENT_URL],
-  }),
-);
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: [process.env.CLIENT_URL],
+//   }),
+// );
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
 
 
