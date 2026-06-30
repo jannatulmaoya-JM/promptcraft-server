@@ -1,3 +1,5 @@
+(async () => {
+  const jose = await import('jose');
 const express = require('express');
 const dontenv = require("dotenv");
 const cors = require("cors");
@@ -170,3 +172,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on  ${port} PORT`);
 });
+
+})();
